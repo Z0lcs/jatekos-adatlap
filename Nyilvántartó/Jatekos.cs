@@ -19,24 +19,19 @@ public class Jatekos
     public int Kiallitas { get; set; }
     public int PirosLap { get; set; }
 
-    public Jatekos(string nev, int kor, string csapat, int meccs, string eredmeny, int gol, int bunteto, int sarga, int kiallitas, int piros)
+    public Jatekos(string nev, int kor, string csapat, int meccs, int gyoz, int dont, int ver, int gol, int bunteto, int sarga, int kiallitas, int piros)
     {
         this.Nev = nev.Length > 20 ? nev.Substring(0, 20) : nev;
-        this.Eletkor = Math.Max(0, Math.Min(200, kor));
+        this.Eletkor = Math.Max(0, Math.Min(50, kor));
         this.Csapat = csapat.Length > 25 ? csapat.Substring(0, 25) : csapat;
         this.Meccs = meccs < 0 ? 0 : meccs;
-        string[] kimenetelek = eredmeny.Split(',');
-        if (kimenetelek.Length == 3)
-        {
-            this.Gyozelem = Math.Max(0, int.Parse(kimenetelek[0]));
-            this.Dontetlen = Math.Max(0, int.Parse(kimenetelek[1]));
-            this.Vereseg = Math.Max(0, int.Parse(kimenetelek[2]));
-        }
+        this.Gyozelem = Math.Max(0, gyoz);
+        this.Dontetlen = Math.Max(0, dont);
+        this.Vereseg = Math.Max(0, ver);
         this.Gol = Math.Max(0, gol);
         this.Bunteto = Math.Max(0, bunteto);
         this.SargaLap = Math.Max(0, sarga);
         this.Kiallitas = Math.Max(0, kiallitas);
         this.PirosLap = Math.Max(0, piros);
     }
-
 }

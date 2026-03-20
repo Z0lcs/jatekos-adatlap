@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 
 namespace Nyilvántartó
 {
@@ -61,8 +60,8 @@ namespace Nyilvántartó
                     UI.ListaMegjelenitese(jatekosok);
                     break;
                 case 1:
-                    Console.WriteLine("═══ Új játékos felvétele ═══");
-                    // Ide jön az adatbekérés
+                    //Console.WriteLine("═══ Új játékos felvétele ═══");
+                    JatekosFelvetel();
                     break;
                 case 2:
                     Console.WriteLine("═══ Játékos módosítása ═══");
@@ -73,7 +72,7 @@ namespace Nyilvántartó
                     // Ide jön a törlés
                     break;
                 case 4:
-                    AdatokMentese(jatekosok);
+                    // Kilépés
                     return false;
             }
 
@@ -81,26 +80,47 @@ namespace Nyilvántartó
             Console.ReadKey(true);
             return true;
         }
-
-        static void AdatokMentese(List<Jatekos> jatekosLista)
+        static void JatekosFelvetel()
         {
-            try
+            string nev, csapat;
+            int kor, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiallitas, piros;
+            Console.Clear();
+            Console.WriteLine("═══ Új játékos felvétele ═══");
+            bool nevValasztasJo = false;
+            while (!nevValasztasJo)
             {
-                var beallitasok = new JsonSerializerOptions
-                {
-                    WriteIndented = true
-                };
+                Console.Write("Add meg a játékos nevét: ");
+                nev = Console.ReadLine();
 
-                string jsonSzoveg = JsonSerializer.Serialize(jatekosLista, beallitasok);
-                File.WriteAllText("jatekosok.json", jsonSzoveg);
+                if (string.IsNullOrWhiteSpace(nev) || nev.Any(char.IsDigit))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Hiba: A név nem lehet üres, és nem lehet benne szám!");
+                    Console.ResetColor();
+                    nevValasztasJo = false;
+                }
+                else
+                    nevValasztasJo = true;
             }
-            catch (Exception hiba)
+            Console.WriteLine();
+
+            kor = Szambekeres("Add meg a játékos életkorát (15–200): ");
+        }
+
+        static int Szambekeres(string mit)
+        {
+            int szam = 0;
+            Console.Write(mit);
+            string k = Console.ReadLine();
+            while (!int.TryParse(k, out szam) || szam < 15 || szam > 200)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nHiba történt a mentés során: " + hiba.Message);
+                Console.WriteLine("Hiba: az életkornak 15 és 200 között kell lennie!\n");
                 Console.ResetColor();
-                Console.ReadKey(true);
+                Console.Write(mit);
+                k = Console.ReadLine();
             }
+            return szam;
         }
     }
 }
