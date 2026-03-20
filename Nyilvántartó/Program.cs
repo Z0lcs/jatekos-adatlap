@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace Nyilvántartó
 {
@@ -72,13 +73,34 @@ namespace Nyilvántartó
                     // Ide jön a törlés
                     break;
                 case 4:
-                    // Kilépés
+                    AdatokMentese(jatekosok);
                     return false;
             }
 
             Console.WriteLine("\nNyomj meg egy gombot a visszalépéshez...");
             Console.ReadKey(true);
             return true;
+        }
+
+        static void AdatokMentese(List<Jatekos> jatekosLista)
+        {
+            try
+            {
+                var beallitasok = new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                };
+
+                string jsonSzoveg = JsonSerializer.Serialize(jatekosLista, beallitasok);
+                File.WriteAllText("jatekosok.json", jsonSzoveg);
+            }
+            catch (Exception hiba)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\nHiba történt a mentés során: " + hiba.Message);
+                Console.ResetColor();
+                Console.ReadKey(true);
+            }
         }
     }
 }
