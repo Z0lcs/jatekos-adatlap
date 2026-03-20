@@ -110,19 +110,47 @@ namespace Nyilvántartó
         }
         public static void ListaMegjelenitese(List<Jatekos> jatekosLista)
         {
+            string cim = "═══ Játékosok Listája ═══";
+            int cimMargo = Math.Max(0, (Console.WindowWidth - cim.Length) / 2);
+            Console.WriteLine();
+            Console.SetCursorPosition(cimMargo, Console.CursorTop);
+            Console.WriteLine(cim);
+            Console.WriteLine();
+
             if (jatekosLista.Count == 0)
             {
-                Console.WriteLine("A nyilvántartás jelenleg üres. Vegyél fel egy új játékost az F2 gombbal!");
+                string uzenet = "A nyilvántartás jelenleg üres. Vegyél fel egy új játékost az F2 gombbal!";
+                Console.SetCursorPosition(Math.Max(0, (Console.WindowWidth - uzenet.Length) / 2), Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(uzenet);
+                Console.ResetColor();
                 return;
             }
 
-            Console.WriteLine($"| {"Név",-20} | {"Kor",-3} | {"Csapat",-25} | {"Meccs",5} | {"Eredmény",-9} | {"Gól",3} | {"Bünt",4} | {"Sárga",5} | {"Kiáll",5} | {"Piros",5} |");
-            Console.WriteLine(new string('-', 120));
+            int tablaSzelesseg = 120;
+            int balMargo = Math.Max(0, (Console.WindowWidth - tablaSzelesseg) / 2);
 
-            foreach (var j in jatekosLista)
+            Console.SetCursorPosition(balMargo, Console.CursorTop);
+            Console.WriteLine("╔══════════════════════╦═════╦══════════════════════════╦═══════╦═════╦═════╦═════╦═════╦══════╦═══════╦═══════╦═══════╗");
+
+            Console.SetCursorPosition(balMargo, Console.CursorTop);
+            Console.WriteLine($"║ {"Név",-20} ║ {"Kor",3} ║ {"Csapat",-24} ║ {"Meccs",5} ║ {"Gy",3} ║ {"D",2}  ║ {"V",2}  ║ {"Gól",3} ║ {"Bünt",4} ║ {"Sárga",5} ║ {"Kiáll",5} ║ {"Piros",5} ║");
+
+            Console.SetCursorPosition(balMargo, Console.CursorTop);
+            Console.WriteLine("╠══════════════════════╬═════╬══════════════════════════╬═══════╬═════╬═════╬═════╬═════╬══════╬═══════╬═══════╬═══════╣");
+
+            for (int i = 0; i < jatekosLista.Count; i++)
             {
-                Console.WriteLine($"| {j.Nev,-20} | {j.Eletkor,3} | {j.Csapat,-25} | {j.Meccs,5} | {j.Eredmeny,-9} | {j.Gol,3} | {j.Bunteto,4} | {j.SargaLap,5} | {j.Kiallitas,5} | {j.PirosLap,5} |");
+                var j = jatekosLista[i];
+
+                Console.SetCursorPosition(balMargo, Console.CursorTop);
+                Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.White : ConsoleColor.Gray;
+                Console.WriteLine($"║ {j.Nev,-20} ║ {j.Eletkor,3} ║ {j.Csapat,-24} ║ {j.Meccs,5} ║ {j.Gyozelem,3} ║ {j.Dontetlen,2}  ║ {j.Vereseg,2}  ║ {j.Gol,3} ║ {j.Bunteto,4} ║ {j.SargaLap,5} ║ {j.Kiallitas,5} ║ {j.PirosLap,5} ║");
             }
+
+            Console.SetCursorPosition(balMargo, Console.CursorTop);
+            Console.WriteLine("╚══════════════════════╩═════╩══════════════════════════╩═══════╩═════╩═════╩═════╩═════╩══════╩═══════╩═══════╩═══════╝");
+            Console.WriteLine();
         }
     }
 }

@@ -7,13 +7,13 @@ namespace Nyilvántartó
         static List<Jatekos> jatekosok = new List<Jatekos>();
         static void Main(string[] args)
         {
-            Console.WindowWidth = 120;
             Console.CursorVisible = false;
 
-            // --- Teszt adatok feltöltése ---
-            jatekosok.Add(new Jatekos("Szoboszlai Dominik", 23, "Liverpool FC", 25, "Győztes", 5, 2, 3, 0, 0));
-            jatekosok.Add(new Jatekos("Sallai Roland", 26, "SC Freiburg", 20, "Döntetlen", 3, 0, 4, 0, 0));
-            jatekosok.Add(new Jatekos("Gulácsi Péter", 33, "RB Leipzig", 30, "Vesztes", 0, 0, 1, 0, 0));
+            jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24,"17,2,5", 85, 0, 4, 12, 1));
+            jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, "15, 3,8", 92, 15, 2, 3, 0));
+            jatekosok.Add(new Jatekos("Mikler Roland", 39, "Pick Szeged", 25, "18,2,5", 1, 0, 1, 0, 0));
+            jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26,"20,2,4", 145, 42, 3, 5, 0));
+            jatekosok.Add(new Jatekos("Böde-Bíró Blanka", 29, "FTC-Rail Cargo", 22,"16,1,5", 2, 0, 0, 0, 0));
 
             string[] hosszuMenupontok = ["Megtekintés", "Felvétel", "Módosítás", "Törlés", "Kilépés"];
             bool futAProgram = true;
