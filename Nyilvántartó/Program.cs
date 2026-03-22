@@ -10,7 +10,7 @@ namespace Nyilvántartó
         static void Main(string[] args)
         {
             Console.CursorVisible = false;
-
+                            // nev, kor, csapat, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiallitas, piros
             jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17,2,5, 85, 0, 4, 12, 1));
             jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3,8,92, 15, 2, 3, 0));
             jatekosok.Add(new Jatekos("Mikler Roland", 39, "Pick Szeged", 25, 18, 2,5,1, 0, 1, 0, 0));
@@ -54,7 +54,6 @@ namespace Nyilvántartó
         static bool FunkcioInditasa(int index)
         {
             Console.Clear();
-
             switch (index)
             {
                 case 0:
@@ -70,8 +69,8 @@ namespace Nyilvántartó
                     // Ide jön a módosítás
                     break;
                 case 3:
-                    Console.WriteLine("═══ Játékos törlése ═══");
-                    // Ide jön a törlés
+                    //Console.WriteLine("═══ Játékos törlése ═══");
+                    JatekosTorol();
                     break;
                 case 4:
                     // Kilépés
@@ -91,7 +90,6 @@ namespace Nyilvántartó
             int dont=0; 
             int ver=0;
             Console.Clear();
-            Console.WriteLine("═══ Új játékos felvétele ═══");
             bool nevValasztasJo = false;
             while (!nevValasztasJo)
             {
@@ -110,7 +108,7 @@ namespace Nyilvántartó
             }
             Console.WriteLine();
 
-            kor = Szambekeres("Add meg a játékos életkorát (15–200): ", 15, 50);
+            kor = Szambekeres("Add meg a játékos életkorát (15 – 50): ", 15, 50);
             Console.WriteLine();
 
             bool csapatValasztasJo = false;
@@ -159,7 +157,40 @@ namespace Nyilvántartó
 
             jatekosok.Add(new Jatekos(nev, kor, csapat, meccs, gyoz,dont,ver, gol, bunteto, sarga, kiallitas, piros));
         }
+        static void JatekosTorol()
+        {
+            Console.Clear();
+            Console.Write("Add meg a törölni kívánt játékos teljes nevét: ");
+            UI.ListaMegjelenitese(jatekosok);
+            string keresettNev = Console.ReadLine();
+            Jatekos talalat = jatekosok.FirstOrDefault(j => j.Nev.Equals(keresettNev, StringComparison.OrdinalIgnoreCase));
 
+            if (talalat != null)
+            {
+                Console.WriteLine($"\nTalált játékos: {talalat.Nev} ({talalat.Csapat})");
+                Console.Write("Biztosan törlöd? ([I]/[N]): ");
+
+                if (Console.ReadKey().Key == ConsoleKey.I)
+                {
+                    jatekosok.Remove(talalat);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\nSikeres törlés!");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n Törlés megszakítva.");
+                    Console.ResetColor();
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\nNincs ilyen nevű játékos a listában!");
+                Console.ResetColor();
+            }
+        }
         static int Szambekeres(string mit, int min, int max)
         {
             int szam = 0;
