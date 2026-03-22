@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.ConstrainedExecution;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Nyilvántartó
 {
@@ -9,11 +11,11 @@ namespace Nyilvántartó
         {
             Console.CursorVisible = false;
 
-            jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24,"17,2,5", 85, 0, 4, 12, 1));
-            jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, "15, 3,8", 92, 15, 2, 3, 0));
-            jatekosok.Add(new Jatekos("Mikler Roland", 39, "Pick Szeged", 25, "18,2,5", 1, 0, 1, 0, 0));
-            jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26,"20,2,4", 145, 42, 3, 5, 0));
-            jatekosok.Add(new Jatekos("Böde-Bíró Blanka", 29, "FTC-Rail Cargo", 22,"16,1,5", 2, 0, 0, 0, 0));
+            jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17,2,5, 85, 0, 4, 12, 1));
+            jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3,8,92, 15, 2, 3, 0));
+            jatekosok.Add(new Jatekos("Mikler Roland", 39, "Pick Szeged", 25, 18, 2,5,1, 0, 1, 0, 0));
+            jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26, 20,2,4, 145, 42, 3, 5, 0));
+            jatekosok.Add(new Jatekos("Böde-Bíró Blanka", 29, "FTC-Rail Cargo", 22, 16,1,5, 2, 0, 0, 0, 0));
 
             string[] hosszuMenupontok = ["Megtekintés", "Felvétel", "Módosítás", "Törlés", "Kilépés"];
             bool futAProgram = true;
@@ -82,8 +84,12 @@ namespace Nyilvántartó
         }
         static void JatekosFelvetel()
         {
-            string nev, csapat;
-            int kor, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiallitas, piros;
+            string nev =""; 
+            string csapat ="";
+            int kor, meccs, gol, bunteto, sarga, kiallitas, piros;
+            int gyoz=0; 
+            int dont=0; 
+            int ver=0;
             Console.Clear();
             Console.WriteLine("═══ Új játékos felvétele ═══");
             bool nevValasztasJo = false;
@@ -104,18 +110,65 @@ namespace Nyilvántartó
             }
             Console.WriteLine();
 
-            kor = Szambekeres("Add meg a játékos életkorát (15–200): ");
+            kor = Szambekeres("Add meg a játékos életkorát (15–200): ", 15, 50);
+            Console.WriteLine();
+
+            bool csapatValasztasJo = false;
+            while (!csapatValasztasJo)
+            {
+                Console.Write("Add meg a játékos nevét: ");
+                csapat = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(csapat))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Hiba: A név nem lehet üres!");
+                    Console.ResetColor();
+                    csapatValasztasJo = false;
+                }
+                else
+                    csapatValasztasJo = true;
+            }
+            Console.WriteLine();
+
+            meccs = Szambekeres("Add meg, hogy hány meccset játszott a játékos: ", 0, 999);
+            Console.WriteLine();
+
+            Console.WriteLine("Add meg a játékos meccseinek eredményeit: ");
+            while (true)
+            {
+                gyoz = Szambekeres("Győzelem: ", 0, 999);
+                dont = Szambekeres("Döntetlen: ", 0, 999);
+                ver = Szambekeres("Vereség: ", 0, 999);
+                if (gyoz + dont + ver < meccs || gyoz + dont + ver > meccs)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Hiba: az összes eredmény számának egyeznie kell a meccsek számával!");
+                    Console.ResetColor();
+                }
+                else break;
+            }
+            Console.WriteLine();
+
+            Console.WriteLine("Add meg a játékos meccsen elért statisztikáit: ");
+            gol = Szambekeres("Gólok száma: ", 0, 999);
+            bunteto = Szambekeres("Belőtt büntetők száma: ", 0, 999);
+            sarga = Szambekeres("Sárga lapok száma: ", 0, 999);
+            kiallitas = Szambekeres("2 perces kiállítások száma: ", 0, 999);
+            piros = Szambekeres("Piros lapok száma: ", 0, 999);
+
+            jatekosok.Add(new Jatekos(nev, kor, csapat, meccs, gyoz,dont,ver, gol, bunteto, sarga, kiallitas, piros));
         }
 
-        static int Szambekeres(string mit)
+        static int Szambekeres(string mit, int min, int max)
         {
             int szam = 0;
             Console.Write(mit);
             string k = Console.ReadLine();
-            while (!int.TryParse(k, out szam) || szam < 15 || szam > 200)
+            while (!int.TryParse(k, out szam) || min > szam || max < szam)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Hiba: az életkornak 15 és 200 között kell lennie!\n");
+                Console.WriteLine("Hiba!");
                 Console.ResetColor();
                 Console.Write(mit);
                 k = Console.ReadLine();
