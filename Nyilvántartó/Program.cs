@@ -1,210 +1,252 @@
 ﻿using System;
-using System.Runtime.ConstrainedExecution;
-using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
+using System.Linq;
+using Spectre.Console;
 
 namespace Nyilvántartó
 {
     class Program
     {
         static List<Jatekos> jatekosok = new List<Jatekos>();
+
         static void Main(string[] args)
         {
-            Console.CursorVisible = false;
-                            // nev, kor, csapat, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiallitas, piros
-            jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17,2,5, 85, 0, 4, 12, 1));
-            jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3,8,92, 15, 2, 3, 0));
-            jatekosok.Add(new Jatekos("Mikler Roland", 39, "Pick Szeged", 25, 18, 2,5,1, 0, 1, 0, 0));
-            jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26, 20,2,4, 145, 42, 3, 5, 0));
-            jatekosok.Add(new Jatekos("Böde-Bíró Blanka", 29, "FTC-Rail Cargo", 22, 16,1,5, 2, 0, 0, 0, 0));
+            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            InitAdatok();
 
-            string[] hosszuMenupontok = ["Megtekintés", "Felvétel", "Módosítás", "Törlés", "Kilépés"];
             bool futAProgram = true;
-
-            Console.CursorVisible = false;
-
             while (futAProgram)
             {
-                Console.Clear();
+                string valasztas = UI.MenuValaszto();
 
-                UI.MenuRajzolas(hosszuMenupontok, [], -1);
-
-                ConsoleKeyInfo gombNyomas = Console.ReadKey(true);
-
-                switch (gombNyomas.Key)
+                switch (valasztas)
                 {
-                    case ConsoleKey.F1:
-                        futAProgram = FunkcioInditasa(0);
+                    case "Fájl":
+                        string fajlMuvelet = UI.FajlMenuValaszto();
+                        //FajlKezeles(fajlMuvelet);
+                        AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                        Visszaleptetes();
                         break;
-                    case ConsoleKey.F2:
-                        futAProgram = FunkcioInditasa(1);
+                    case "Megtekintés":
+                        Console.Clear();
+                        UI.ListaMegjelenitese(jatekosok);
+                        Visszaleptetes();
                         break;
-                    case ConsoleKey.F3:
-                        futAProgram = FunkcioInditasa(2);
+                    case "Felvétel":
+                        JatekosFelvetel();
                         break;
-                    case ConsoleKey.F4:
-                        futAProgram = FunkcioInditasa(3);
+                    case "Módosítás":
+                        JatekosModositas();
+                        Visszaleptetes();
                         break;
-                    case ConsoleKey.F5:
-                        futAProgram = FunkcioInditasa(4);
+                    case "Törlés":
+                        JatekosTorol();
+                        break;
+                    case "Kilépés":
+                        futAProgram = false;
                         break;
                 }
             }
         }
 
-        static bool FunkcioInditasa(int index)
-        {
-            Console.Clear();
-            switch (index)
-            {
-                case 0:
-                    //Console.WriteLine("═══ Megtekintés ═══");
-                    UI.ListaMegjelenitese(jatekosok);
-                    break;
-                case 1:
-                    //Console.WriteLine("═══ Új játékos felvétele ═══");
-                    JatekosFelvetel();
-                    break;
-                case 2:
-                    Console.WriteLine("═══ Játékos módosítása ═══");
-                    // Ide jön a módosítás
-                    break;
-                case 3:
-                    //Console.WriteLine("═══ Játékos törlése ═══");
-                    JatekosTorol();
-                    break;
-                case 4:
-                    // Kilépés
-                    return false;
-            }
-
-            Console.WriteLine("\nNyomj meg egy gombot a visszalépéshez...");
-            Console.ReadKey(true);
-            return true;
-        }
         static void JatekosFelvetel()
         {
-            string nev =""; 
-            string csapat ="";
-            int kor, meccs, gol, bunteto, sarga, kiallitas, piros;
-            int gyoz=0; 
-            int dont=0; 
-            int ver=0;
+            string nev = ""; int kor = 0; string csapat = "";
+            int meccs = 0; int gyoz = 0; int dont = 0; int ver = 0;
+            int gol = 0; int bunteto = 0; int sarga = 0; int kiall = 0; int piros = 0;
+
+            void RenderAdatlap(string aktualisMezo)
+            {
+                Console.Clear();
+                var table = new Table().Border(TableBorder.Rounded).Expand().BorderColor(Color.DeepSkyBlue1);
+                table.Title("[bold white on blue] 📝 ÚJ JÁTÉKOS ADATLAPJA [/]");
+                table.AddColumn(new TableColumn("[grey]Mező[/]").Width(20));
+                table.AddColumn(new TableColumn("[bold white]Érték[/]"));
+
+                table.AddRow("Név:", string.IsNullOrEmpty(nev) ? "[grey]...[/]" : $"[bold yellow]{nev}[/]");
+                table.AddRow("Kor:", kor == 0 ? "[grey]-[/]" : kor.ToString());
+                table.AddRow("Csapat:", string.IsNullOrEmpty(csapat) ? "[grey]-[/]" : csapat);
+                table.AddRow("Mérleg (GY/D/V):", meccs == 0 ? "[grey]-[/]" : $"{meccs} ({gyoz}/{dont}/{ver})");
+                table.AddRow("Gólok (7m):", gol == 0 ? "[grey]-[/]" : $"{gol} ({bunteto})");
+                table.AddRow("Büntetések (S/2/P):", $"[yellow]{sarga}[/] / [blue]{kiall}[/] / [red]{piros}[/]");
+
+                AnsiConsole.Write(table);
+                AnsiConsole.Write(new Rule($"[yellow]Kérjük, add meg: {aktualisMezo}[/]").LeftJustified());
+                AnsiConsole.WriteLine();
+            }
+
+
+            RenderAdatlap("Játékos neve");
+            nev = SzovegBekeres("Játékos neve", false);
+
+            RenderAdatlap("Életkor");
+            kor = Szambekeres("Életkor", 15, 60);
+
+            RenderAdatlap("Csapat");
+            csapat = SzovegBekeres("Csapat neve", true);
+
+            RenderAdatlap("Összes mérkőzés");
+            meccs = Szambekeres("Meccsszám", 0, 999);
+
+            if (meccs > 0)
+            {
+                RenderAdatlap("Győzelmek száma");
+                gyoz = Szambekeres("Győzelmek", 0, meccs);
+
+                RenderAdatlap("Döntetlenek száma");
+                dont = Szambekeres("Döntetlenek", 0, meccs - gyoz);
+
+                ver = meccs - (gyoz + dont);
+            }
+
+            RenderAdatlap("Gólok száma");
+            gol = Szambekeres("Összes gól", 0, 9999);
+
+            RenderAdatlap("Hétméteresek száma");
+            bunteto = Szambekeres("Büntetők", 0, gol);
+
+            RenderAdatlap("Sárga lapok");
+            sarga = Szambekeres("Sárga lap", 0, meccs);
+
+            RenderAdatlap("Kiállítások");
+            kiall = Szambekeres("2 percesek", 0, meccs * 3);
+
+            RenderAdatlap("Piros lapok");
+            piros = Szambekeres("Piros lap", 0, meccs);
+
+            RenderAdatlap("MENTÉS...");
+            AnsiConsole.Status().Start("Adatok rögzítése...", ctx => {
+                System.Threading.Thread.Sleep(1000);
+                jatekosok.Add(new Jatekos(nev, kor, csapat, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiall, piros));
+            });
+
+            UI.SikeresMuvelet("A játékos adatai elmentve!");
+            Visszaleptetes();
+        }
+        static void JatekosModositas()
+        {
             Console.Clear();
-            bool nevValasztasJo = false;
-            while (!nevValasztasJo)
+            UI.ListaMegjelenitese(jatekosok);
+
+            var nev = AnsiConsole.Ask<string>("Melyik játékost módosítsuk? (Írd be a nevét):");
+            var jatekos = jatekosok.FirstOrDefault(j => j.Nev.Equals(nev, StringComparison.OrdinalIgnoreCase));
+
+            if (jatekos == null) { UI.HibaUzenet("Nincs ilyen játékos!"); Visszaleptetes(); return; }
+
+            var mit = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title($"Mit szeretnél módosítani [bold]{jatekos.Nev}[/] adatain?")
+                    .AddChoices(new[] { "Csapat", "Gólok", "Büntetések", "Vissza" }));
+
+            switch (mit)
             {
-                Console.Write("Add meg a játékos nevét: ");
-                nev = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(nev) || nev.Any(char.IsDigit))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Hiba: A név nem lehet üres, és nem lehet benne szám!");
-                    Console.ResetColor();
-                    nevValasztasJo = false;
-                }
-                else
-                    nevValasztasJo = true;
+                case "Csapat":
+                    jatekos.Csapat = AnsiConsole.Ask<string>("Új csapat:");
+                    break;
+                case "Gólok":
+                    jatekos.Gol = Szambekeres("Új gólszám", 0, 999);
+                    break;
+                case "Büntetések":
+                    jatekos.PirosLap = Szambekeres("Piros lapok", 0, 50);
+                    break;
             }
-            Console.WriteLine();
 
-            kor = Szambekeres("Add meg a játékos életkorát (15 – 50): ", 15, 50);
-            Console.WriteLine();
-
-            bool csapatValasztasJo = false;
-            while (!csapatValasztasJo)
-            {
-                Console.Write("Add meg a játékos nevét: ");
-                csapat = Console.ReadLine();
-
-                if (string.IsNullOrWhiteSpace(csapat))
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Hiba: A név nem lehet üres!");
-                    Console.ResetColor();
-                    csapatValasztasJo = false;
-                }
-                else
-                    csapatValasztasJo = true;
-            }
-            Console.WriteLine();
-
-            meccs = Szambekeres("Add meg, hogy hány meccset játszott a játékos: ", 0, 999);
-            Console.WriteLine();
-
-            Console.WriteLine("Add meg a játékos meccseinek eredményeit: ");
-            while (true)
-            {
-                gyoz = Szambekeres("Győzelem: ", 0, 999);
-                dont = Szambekeres("Döntetlen: ", 0, 999);
-                ver = Szambekeres("Vereség: ", 0, 999);
-                if (gyoz + dont + ver < meccs || gyoz + dont + ver > meccs)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Hiba: az összes eredmény számának egyeznie kell a meccsek számával!");
-                    Console.ResetColor();
-                }
-                else break;
-            }
-            Console.WriteLine();
-
-            Console.WriteLine("Add meg a játékos meccsen elért statisztikáit: ");
-            gol = Szambekeres("Gólok száma: ", 0, 999);
-            bunteto = Szambekeres("Belőtt büntetők száma: ", 0, 999);
-            sarga = Szambekeres("Sárga lapok száma: ", 0, 999);
-            kiallitas = Szambekeres("2 perces kiállítások száma: ", 0, 999);
-            piros = Szambekeres("Piros lapok száma: ", 0, 999);
-
-            jatekosok.Add(new Jatekos(nev, kor, csapat, meccs, gyoz,dont,ver, gol, bunteto, sarga, kiallitas, piros));
+            UI.SikeresMuvelet("Adat frissítve!");
         }
         static void JatekosTorol()
         {
             Console.Clear();
-            Console.Write("Add meg a törölni kívánt játékos teljes nevét: ");
             UI.ListaMegjelenitese(jatekosok);
-            string keresettNev = Console.ReadLine();
-            Jatekos talalat = jatekosok.FirstOrDefault(j => j.Nev.Equals(keresettNev, StringComparison.OrdinalIgnoreCase));
+
+            string keresettNev = AnsiConsole.Ask<string>("Törölni kívánt játékos neve: ");
+            var talalat = jatekosok.FirstOrDefault(j => j.Nev.Equals(keresettNev, StringComparison.OrdinalIgnoreCase));
 
             if (talalat != null)
             {
-                Console.WriteLine($"\nTalált játékos: {talalat.Nev} ({talalat.Csapat})");
-                Console.Write("Biztosan törlöd? ([I]/[N]): ");
-
-                if (Console.ReadKey().Key == ConsoleKey.I)
+                if (AnsiConsole.Confirm($"[red]Biztosan törlöd[/] [white bold]{talalat.Nev}[/] adatait?"))
                 {
                     jatekosok.Remove(talalat);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nSikeres törlés!");
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n Törlés megszakítva.");
-                    Console.ResetColor();
+                    UI.SikeresMuvelet("Törölve.");
                 }
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nNincs ilyen nevű játékos a listában!");
-                Console.ResetColor();
+                UI.HibaUzenet("Nincs ilyen játékos.");
+            }
+            Visszaleptetes();
+        }
+
+        static int Szambekeres(string cimke, int min, int max)
+        {
+            int startLine = Console.CursorTop;
+
+            while (true)
+            {
+                Console.SetCursorPosition(0, startLine);
+                Console.Write(new string(' ', Console.WindowWidth * 2));
+                Console.SetCursorPosition(0, startLine);
+
+                AnsiConsole.Markup($"[white]{cimke} ({min}-{max}): [/]");
+
+                string input = Console.ReadLine();
+
+                if (int.TryParse(input, out int szam) && szam >= min && szam <= max)
+                {
+                    return szam; 
+                }
+
+                Console.SetCursorPosition(0, startLine + 1);
+                AnsiConsole.Markup($"[bold red]! Érvénytelen: {min} és {max} közötti számot adj meg![/]");
+                System.Threading.Thread.Sleep(1000);
             }
         }
-        static int Szambekeres(string mit, int min, int max)
+        static string SzovegBekeres(string cimke, bool szamotTartalmazhat = true)
         {
-            int szam = 0;
-            Console.Write(mit);
-            string k = Console.ReadLine();
-            while (!int.TryParse(k, out szam) || min > szam || max < szam)
+            int startLine = Console.CursorTop;
+
+            while (true)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Hiba!");
-                Console.ResetColor();
-                Console.Write(mit);
-                k = Console.ReadLine();
+                Console.SetCursorPosition(0, startLine);
+                Console.Write(new string(' ', Console.WindowWidth * 2));
+                Console.SetCursorPosition(0, startLine);
+
+                AnsiConsole.Markup($"[white]{cimke}: [/]");
+                string input = Console.ReadLine()?.Trim();
+
+                // 3. Validáció
+                bool hiba = false;
+                string hibaUzenet = "";
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    hiba = true;
+                    hibaUzenet = "A mező nem maradhat üres!";
+                }
+                else if (!szamotTartalmazhat && input.Any(char.IsDigit))
+                {
+                    hiba = true;
+                    hibaUzenet = "A név nem tartalmazhat számot!";
+                }
+
+                if (!hiba) return input; 
+
+                Console.SetCursorPosition(0, startLine + 1);
+                AnsiConsole.Markup($"[bold red]! {hibaUzenet}[/]");
+                System.Threading.Thread.Sleep(1000);
             }
-            return szam;
+        }
+
+        static void Visszaleptetes()
+        {
+            AnsiConsole.Markup("\n[grey]Nyomj ENTER-t a visszalépéshez...[/]");
+            Console.ReadLine();
+        }
+
+        static void InitAdatok()
+        {
+            jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17, 2, 5, 85, 0, 4, 12, 1));
+            jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3, 8, 92, 15, 2, 3, 0));
+            jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26, 20, 2, 4, 145, 42, 3, 5, 0));
         }
     }
 }

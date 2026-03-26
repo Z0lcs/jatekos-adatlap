@@ -1,156 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Spectre.Console;
 
 namespace Nyilvántartó
 {
     public class UI
     {
-        public static void MenuRajzolas(string[] hosszuElemek, string[] rovidElemek, int kivalasztottIndex)
+        public static string MenuValaszto()
         {
-            ConsoleColor[] hatterSzinek =
-            {
-            ConsoleColor.DarkRed, ConsoleColor.DarkMagenta, ConsoleColor.DarkBlue,
-            ConsoleColor.DarkYellow, ConsoleColor.DarkGreen, ConsoleColor.DarkCyan
-            };
+            Console.Clear();
 
-            int elemekSzama = hosszuElemek.Length;
-            if (elemekSzama == 0) return;
+            var header = new FigletText("HANDBALL PRO")
+                .Color(Color.DeepSkyBlue1)
+                .Centered();
+            AnsiConsole.Write(header);
 
-            int konzolSzelesseg = Console.WindowWidth;
-            int belsoTerkoz = 8;
-            int dobozokKoztiTavolsag = 3;
+            AnsiConsole.Write(new Rule("[yellow]FŐMENÜ[/]").RuleStyle("grey").Centered());
+            AnsiConsole.WriteLine();
 
-            int elmeletiTeljesSzelesseg = 0;
-            for (int i = 0; i < elemekSzama; i++)
-            {
-                elmeletiTeljesSzelesseg += hosszuElemek[i].Length + belsoTerkoz + dobozokKoztiTavolsag;
-            }
-            elmeletiTeljesSzelesseg -= 1;
-
-            string[] megjelenitendoElemek = elmeletiTeljesSzelesseg > konzolSzelesseg ? rovidElemek : hosszuElemek;
-
-            int veglegesTeljesSzelesseg = 0;
-            int[] elemSzelessegek = new int[elemekSzama];
-
-            for (int i = 0; i < elemekSzama; i++)
-            {
-                elemSzelessegek[i] = megjelenitendoElemek[i].Length + belsoTerkoz;
-                veglegesTeljesSzelesseg += elemSzelessegek[i] + dobozokKoztiTavolsag;
-            }
-            veglegesTeljesSzelesseg -= 1;
-
-            int balMargo = Math.Max(0, (konzolSzelesseg - veglegesTeljesSzelesseg) / 2);
-
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            for (int i = 0; i < elemekSzama; i++)
-            {
-                string fGombSzoveg = $"F{i + 1}";
-                int vonalHossz = Math.Max(0, elemSzelessegek[i] - fGombSzoveg.Length - 2);
-                int balVonalHossz = vonalHossz / 2;
-                int jobbVonalHossz = vonalHossz - balVonalHossz;
-
-                string felsoKeret = new string('═', balVonalHossz) + " " + fGombSzoveg + " " + new string('═', jobbVonalHossz);
-                string zaroTavolsag = (i == elemekSzama - 1) ? "" : " ";
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("╔" + felsoKeret + "╗" + zaroTavolsag);
-            }
-            Console.WriteLine();
-
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            for (int i = 0; i < elemekSzama; i++)
-            {
-                string aktualisSzoveg = megjelenitendoElemek[i];
-                int uresHely = elemSzelessegek[i] - aktualisSzoveg.Length;
-                int balSzokozDb = uresHely / 2;
-                int jobbSzokozDb = uresHely - balSzokozDb;
-
-                string kozepezettSzoveg = new string(' ', balSzokozDb) + aktualisSzoveg + new string(' ', jobbSzokozDb);
-                ConsoleColor alapHatterSzin = (i < hatterSzinek.Length) ? hatterSzinek[i] : ConsoleColor.DarkGray;
-
-
-                ConsoleColor dobozHatterSzin = alapHatterSzin;
-                ConsoleColor dobozSzovegSzin = ConsoleColor.White;
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.Write("║");
-
-                Console.BackgroundColor = dobozHatterSzin;
-                Console.ForegroundColor = dobozSzovegSzin;
-                Console.Write(kozepezettSzoveg);
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.Write("║");
-
-                if (i < elemekSzama - 1)
-                {
-                    Console.Write(" ");
-                }
-            }
-            Console.WriteLine();
-
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            for (int i = 0; i < elemekSzama; i++)
-            {
-                string alsoKeret = new string('═', elemSzelessegek[i]);
-                string zaroTavolsag = (i == elemekSzama - 1) ? "" : " ";
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("╚" + alsoKeret + "╝" + zaroTavolsag);
-            }
-
-            Console.ResetColor();
-            Console.WriteLine();
-            Console.WriteLine();
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .PageSize(10)
+                    .HighlightStyle(new Style(foreground: Color.Black, background: Color.DeepSkyBlue1))
+                    .AddChoices(new[] { "Fájl", "Megtekintés", "Felvétel", "Módosítás", "Törlés", "Kilépés" }));
         }
         public static void ListaMegjelenitese(List<Jatekos> jatekosLista)
         {
-            string cim = "═══ Játékosok Listája ═══";
-            int cimMargo = Math.Max(0, (Console.WindowWidth - cim.Length) / 2);
-            Console.WriteLine();
-            Console.SetCursorPosition(cimMargo, Console.CursorTop);
-            Console.WriteLine(cim);
-            Console.WriteLine();
-
             if (jatekosLista.Count == 0)
             {
-                string uzenet = "A nyilvántartás jelenleg üres. Vegyél fel egy új játékost az F2 gombbal!";
-                Console.SetCursorPosition(Math.Max(0, (Console.WindowWidth - uzenet.Length) / 2), Console.CursorTop);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine(uzenet);
-                Console.ResetColor();
+                var hibaPanel = new Panel("[red]Nincs adat a rendszerben![/]").BorderColor(Color.Red);
+                AnsiConsole.Write(new Align(hibaPanel, HorizontalAlignment.Center));
                 return;
             }
 
-            int tablaSzelesseg = 120;
-            int balMargo = Math.Max(0, (Console.WindowWidth - tablaSzelesseg) / 2);
+            var table = new Table()
+                .Border(TableBorder.Rounded)
+                .BorderColor(Color.Grey35)
+                .Title("[bold white on blue] 🤾 KÉZILABDA JÁTÉKOS NYILVÁNTARTÁS [/]")
+                .Expand();
 
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            Console.WriteLine("╔══════════════════════╦═════╦══════════════════════════╦═══════╦═════╦═════╦═════╦═════╦══════╦═══════╦═══════╦═══════╗");
+            table.AddColumn(new TableColumn("[bold yellow]Név[/]"));
+            table.AddColumn(new TableColumn("[grey]Kor[/]").Centered());
+            table.AddColumn(new TableColumn("[blue]Csapat[/]"));
+            table.AddColumn(new TableColumn("[white]Meccs (GY/D/V)[/]").Centered());
+            table.AddColumn(new TableColumn("[green]Gól (7m)[/]").Centered());
+            table.AddColumn(new TableColumn("[yellow]Sárga[/]").Centered());
+            table.AddColumn(new TableColumn("[blue]2 min[/]").Centered());
+            table.AddColumn(new TableColumn("[red]Piros[/]").Centered());
 
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            Console.WriteLine($"║ {"Név",-20} ║ {"Kor",3} ║ {"Csapat",-24} ║ {"Meccs",5} ║ {"Gy",3} ║ {"D",2}  ║ {"V",2}  ║ {"Gól",3} ║ {"Bünt",4} ║ {"Sárga",5} ║ {"Kiáll",5} ║ {"Piros",5} ║");
+            int maxGol = jatekosLista.Max(j => j.Gol);
 
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            Console.WriteLine("╠══════════════════════╬═════╬══════════════════════════╬═══════╬═════╬═════╬═════╬═════╬══════╬═══════╬═══════╬═══════╣");
-
-            for (int i = 0; i < jatekosLista.Count; i++)
+            foreach (var j in jatekosLista)
             {
-                var j = jatekosLista[i];
+                string nevStyle = j.Gol == maxGol ? $"[bold gold1]{j.Nev} 👑[/]" : j.Nev;
 
-                Console.SetCursorPosition(balMargo, Console.CursorTop);
-                Console.ForegroundColor = (i % 2 == 0) ? ConsoleColor.White : ConsoleColor.Gray;
-                Console.WriteLine($"║ {j.Nev,-20} ║ {j.Eletkor,3} ║ {j.Csapat,-24} ║ {j.Meccs,5} ║ {j.Gyozelem,3} ║ {j.Dontetlen,2}  ║ {j.Vereseg,2}  ║ {j.Gol,3} ║ {j.Bunteto,4} ║ {j.SargaLap,5} ║ {j.Kiallitas,5} ║ {j.PirosLap,5} ║");
+                string merleg = $"{j.Meccs} [grey]({j.Gyozelem}/{j.Dontetlen}/{j.Vereseg})[/]";
+
+                string golok = $"[bold green]{j.Gol}[/] [grey]({j.Bunteto})[/]";
+
+                string sarga = j.SargaLap > 0 ? $"[yellow]{j.SargaLap}[/]" : "[grey]-[/]";
+                string kiallitas = j.Kiallitas > 0 ? $"[blue]{j.Kiallitas}[/]" : "[grey]-[/]";
+                string piros = j.PirosLap > 0 ? $"[white on red] {j.PirosLap} [/]" : "[grey]-[/]";
+
+                table.AddRow(
+                    nevStyle,
+                    j.Eletkor.ToString(),
+                    j.Csapat,
+                    merleg,
+                    golok,
+                    sarga,
+                    kiallitas,
+                    piros
+                );
             }
 
-            Console.SetCursorPosition(balMargo, Console.CursorTop);
-            Console.WriteLine("╚══════════════════════╩═════╩══════════════════════════╩═══════╩═════╩═════╩═════╩═════╩══════╩═══════╩═══════╩═══════╝");
-            Console.WriteLine();
+            AnsiConsole.Write(new Align(table, HorizontalAlignment.Center));
+
+            var osszGol = jatekosLista.Sum(x => x.Gol);
+            var osszMeccs = jatekosLista.Sum(x => x.Meccs);
+
+            var stats = new Columns(
+                new Panel($"[bold green]Összes gól:[/] {osszGol}").BorderColor(Color.Green).Expand(),
+                new Panel($"[bold blue]Átlag életkor:[/] {Math.Round(jatekosLista.Average(x => x.Eletkor), 1)} év").BorderColor(Color.Blue).Expand(),
+                new Panel($"[bold yellow]Összes meccs:[/] {osszMeccs}").BorderColor(Color.Yellow).Expand()
+            );
+
+            AnsiConsole.Write(new Align(stats, HorizontalAlignment.Center));
+        }
+        public static void HibaUzenet(string uzenet) => AnsiConsole.MarkupLine($"[bold white on red] HIBA [/] [red]{uzenet}[/]");
+        public static void SikeresMuvelet(string uzenet) => AnsiConsole.MarkupLine($"[bold black on green] OK [/] [green]{uzenet}[/]");
+        public static void BekeresFejlec(string lepes, string info)
+        {
+            Console.Clear();
+            var panel = new Panel(new Align(new Text(info, new Style(Color.Yellow)), HorizontalAlignment.Center))
+            {
+                Header = new PanelHeader($"[bold blue] ÚJ JÁTÉKOS: {lepes} [/]"),
+                Border = BoxBorder.Rounded,
+                Padding = new Padding(1, 1, 1, 1)
+            };
+            AnsiConsole.Write(panel);
+            AnsiConsole.WriteLine();
+        }
+        public static string FajlMenuValaszto()
+        {
+            Console.Clear();
+            AnsiConsole.Write(new Rule("[yellow]FÁJL MŰVELETEK[/]").RuleStyle("grey"));
+
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .HighlightStyle(new Style(foreground: Color.Black, background: Color.Yellow))
+                    .AddChoices(new[] { "Új adatbázis (Törlés)", "Betöltés fájlból", "Mentés fájlba", "<- Vissza" }));
         }
     }
 }
