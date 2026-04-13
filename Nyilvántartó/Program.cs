@@ -30,6 +30,7 @@ namespace Nyilvántartó
                     case "Megtekintés":
                         Console.Clear();
                         UI.ListaMegjelenitese(jatekosok);
+                        UI.TopGollovokChart(jatekosok);
                         Visszaleptetes();
                         break;
                     case "Felvétel":

@@ -91,6 +91,26 @@ namespace Nyilvántartó
 
             AnsiConsole.Write(new Align(stats, HorizontalAlignment.Center));
             Console.WriteLine();
+
+        }
+        public static void TopGollovokChart(List<Jatekos> lista)
+        {
+            if (lista.Count == 0) return;
+
+            var top5 = lista.OrderByDescending(j => j.Gol).Take(5).ToList();
+
+            var chart = new BarChart()
+                .Width(60)
+                .Label("[green bold]TOP 5 GÓLLÖVŐ (ÖSSZES GÓL)[/]")
+                .CenterLabel();
+
+            foreach (var j in top5)
+            {
+                chart.AddItem(j.Nev, j.Gol, Color.Green);
+            }
+
+            AnsiConsole.Write(new Align(chart, HorizontalAlignment.Center));
+            AnsiConsole.WriteLine();
         }
         public static void HibaUzenet(string uzenet) => AnsiConsole.MarkupLine($"[bold white on red] HIBA [/] [red]{uzenet}[/]");
         public static void SikeresMuvelet(string uzenet) => AnsiConsole.MarkupLine($"[bold black on green] OK [/] [green]{uzenet}[/]");
