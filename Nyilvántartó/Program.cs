@@ -123,43 +123,69 @@ namespace Nyilvántartó
             UI.SikeresMuvelet("A játékos adatai elmentve!");
             Visszaleptetes();
         }
+        static Jatekos JatekosKereso(string bemenet)
+        {
+            if (int.TryParse(bemenet, out int index))
+            {
+                int valodiIndex = index - 1;
+                if (valodiIndex >= 0 && valodiIndex < jatekosok.Count)
+                {
+                    return jatekosok[valodiIndex];
+                }
+            }
+
+            return jatekosok.FirstOrDefault(j => j.Nev.Equals(bemenet, StringComparison.OrdinalIgnoreCase));
+        }
         static void JatekosModositas()
         {
             Console.Clear();
             UI.ListaMegjelenitese(jatekosok);
 
-            var nev = AnsiConsole.Ask<string>("Melyik játékost módosítsuk? (Írd be a nevét):");
-            var jatekos = jatekosok.FirstOrDefault(j => j.Nev.Equals(nev, StringComparison.OrdinalIgnoreCase));
+            var bemenet = AnsiConsole.Ask<string>("Módosítani kívánt játékos [bold yellow]neve[/] vagy [bold yellow]sorszáma[/]: ");
 
-            if (jatekos == null) { UI.HibaUzenet("Nincs ilyen játékos!"); Visszaleptetes(); return; }
+            var jatekos = JatekosKereso(bemenet);
+
+            if (jatekos == null)
+            {
+                UI.HibaUzenet("Nincs ilyen játékos vagy érvénytelen sorszám!");
+                Visszaleptetes();
+                return;
+            }
 
             var mit = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title($"Mit szeretnél módosítani [bold]{jatekos.Nev}[/] adatain?")
+                    .Title($"Mit szeretnél módosítani [bold cyan]{jatekos.Nev}[/] adatain?")
+                    .HighlightStyle(new Style(foreground: Color.Black, background: Color.DeepSkyBlue1))
                     .AddChoices(new[] { "Csapat", "Gólok", "Büntetések", "Vissza" }));
+
+            if (mit == "Vissza") return;
 
             switch (mit)
             {
                 case "Csapat":
-                    jatekos.Csapat = AnsiConsole.Ask<string>("Új csapat:");
+                    jatekos.Csapat = SzovegBekeres("Új csapat neve", true);
                     break;
                 case "Gólok":
-                    jatekos.Gol = Szambekeres("Új gólszám", 0, 999);
+                    jatekos.Gol = Szambekeres("Új gólszám", 0, 9999);
+                    jatekos.Bunteto = Szambekeres("Ebből büntető", 0, jatekos.Gol);
                     break;
                 case "Büntetések":
-                    jatekos.PirosLap = Szambekeres("Piros lapok", 0, 50);
+                    jatekos.SargaLap = Szambekeres("Sárga lapok", 0, jatekos.Meccs);
+                    jatekos.Kiallitas = Szambekeres("2 perces kiállítások", 0, 50);
+                    jatekos.PirosLap = Szambekeres("Piros lapok", 0, 10);
                     break;
             }
 
-            UI.SikeresMuvelet("Adat frissítve!");
+            UI.SikeresMuvelet("Az adatok sikeresen frissítve!");
         }
         static void JatekosTorol()
         {
             Console.Clear();
             UI.ListaMegjelenitese(jatekosok);
 
-            string keresettNev = AnsiConsole.Ask<string>("Törölni kívánt játékos neve: ");
-            var talalat = jatekosok.FirstOrDefault(j => j.Nev.Equals(keresettNev, StringComparison.OrdinalIgnoreCase));
+            string bemenet = AnsiConsole.Ask<string>("Törölni kívánt játékos [bold yellow]neve[/] vagy [bold yellow]sorszáma[/]: ");
+
+            var talalat = JatekosKereso(bemenet);
 
             if (talalat != null)
             {
@@ -171,7 +197,7 @@ namespace Nyilvántartó
             }
             else
             {
-                UI.HibaUzenet("Nincs ilyen játékos.");
+                UI.HibaUzenet("Nincs ilyen játékos vagy érvénytelen sorszám.");
             }
             Visszaleptetes();
         }

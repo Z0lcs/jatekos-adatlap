@@ -16,7 +16,7 @@ namespace Nyilvántartó
                 .Centered();
             AnsiConsole.Write(header);
 
-            AnsiConsole.Write(new Rule("[yellow]FŐMENÜ[/]").RuleStyle("grey").Centered());
+            AnsiConsole.Write(new Rule("[yellow]FŐMENÜ[/]").RuleStyle("grey").LeftJustified());
             AnsiConsole.WriteLine();
 
             return AnsiConsole.Prompt(
@@ -40,30 +40,31 @@ namespace Nyilvántartó
                 .Title("[bold white on blue] 🤾 KÉZILABDA JÁTÉKOS NYILVÁNTARTÁS [/]")
                 .Expand();
 
+            table.AddColumn(new TableColumn("[grey]#[/]")); 
             table.AddColumn(new TableColumn("[bold yellow]Név[/]"));
             table.AddColumn(new TableColumn("[grey]Kor[/]").Centered());
             table.AddColumn(new TableColumn("[blue]Csapat[/]"));
             table.AddColumn(new TableColumn("[white]Meccs (GY/D/V)[/]").Centered());
             table.AddColumn(new TableColumn("[green]Gól (7m)[/]").Centered());
             table.AddColumn(new TableColumn("[yellow]Sárga[/]").Centered());
-            table.AddColumn(new TableColumn("[blue]2 min[/]").Centered());
+            table.AddColumn(new TableColumn("[purple]2 min[/]").Centered());
             table.AddColumn(new TableColumn("[red]Piros[/]").Centered());
 
             int maxGol = jatekosLista.Max(j => j.Gol);
 
+            int sorszam = 1;
+
             foreach (var j in jatekosLista)
             {
                 string nevStyle = j.Gol == maxGol ? $"[bold gold1]{j.Nev} 👑[/]" : j.Nev;
-
                 string merleg = $"{j.Meccs} [grey]({j.Gyozelem}/{j.Dontetlen}/{j.Vereseg})[/]";
-
                 string golok = $"[bold green]{j.Gol}[/] [grey]({j.Bunteto})[/]";
-
                 string sarga = j.SargaLap > 0 ? $"[yellow]{j.SargaLap}[/]" : "[grey]-[/]";
-                string kiallitas = j.Kiallitas > 0 ? $"[blue]{j.Kiallitas}[/]" : "[grey]-[/]";
+                string kiallitas = j.Kiallitas > 0 ? $"[purple]{j.Kiallitas}[/]" : "[grey]-[/]";
                 string piros = j.PirosLap > 0 ? $"[white on red] {j.PirosLap} [/]" : "[grey]-[/]";
 
                 table.AddRow(
+                    $"[grey]{sorszam}.[/]", 
                     nevStyle,
                     j.Eletkor.ToString(),
                     j.Csapat,
@@ -73,6 +74,8 @@ namespace Nyilvántartó
                     kiallitas,
                     piros
                 );
+
+                sorszam++; 
             }
 
             AnsiConsole.Write(new Align(table, HorizontalAlignment.Center));
@@ -87,6 +90,7 @@ namespace Nyilvántartó
             );
 
             AnsiConsole.Write(new Align(stats, HorizontalAlignment.Center));
+            Console.WriteLine();
         }
         public static void HibaUzenet(string uzenet) => AnsiConsole.MarkupLine($"[bold white on red] HIBA [/] [red]{uzenet}[/]");
         public static void SikeresMuvelet(string uzenet) => AnsiConsole.MarkupLine($"[bold black on green] OK [/] [green]{uzenet}[/]");
