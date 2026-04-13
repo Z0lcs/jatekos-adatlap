@@ -8,6 +8,8 @@ namespace Nyilvántartó
     class Program
     {
         static List<Jatekos> jatekosok = new List<Jatekos>();
+        static List<Jatekos> szures = new List<Jatekos>();
+
 
         static void Main(string[] args)
         {
@@ -31,6 +33,7 @@ namespace Nyilvántartó
                         Console.Clear();
                         UI.ListaMegjelenitese(jatekosok);
                         UI.TopGollovokChart(jatekosok);
+                        CsapatSzures();
                         Visszaleptetes();
                         break;
                     case "Felvétel":
@@ -116,7 +119,8 @@ namespace Nyilvántartó
             piros = Szambekeres("Piros lap", 0, meccs);
 
             RenderAdatlap("MENTÉS...");
-            AnsiConsole.Status().Start("Adatok rögzítése...", ctx => {
+            AnsiConsole.Status().Start("Adatok rögzítése...", ctx =>
+            {
                 System.Threading.Thread.Sleep(1000);
                 jatekosok.Add(new Jatekos(nev, kor, csapat, meccs, gyoz, dont, ver, gol, bunteto, sarga, kiall, piros));
             });
@@ -202,7 +206,6 @@ namespace Nyilvántartó
             }
             Visszaleptetes();
         }
-
         static int Szambekeres(string cimke, int min, int max)
         {
             int startLine = Console.CursorTop;
@@ -219,7 +222,7 @@ namespace Nyilvántartó
 
                 if (int.TryParse(input, out int szam) && szam >= min && szam <= max)
                 {
-                    return szam; 
+                    return szam;
                 }
 
                 Console.SetCursorPosition(0, startLine + 1);
@@ -255,25 +258,38 @@ namespace Nyilvántartó
                     hibaUzenet = "A név nem tartalmazhat számot!";
                 }
 
-                if (!hiba) return input; 
+                if (!hiba) return input;
 
                 Console.SetCursorPosition(0, startLine + 1);
                 AnsiConsole.Markup($"[bold red]! {hibaUzenet}[/]");
                 System.Threading.Thread.Sleep(1000);
             }
         }
-
         static void Visszaleptetes()
         {
             AnsiConsole.Markup("\n[grey]Nyomj ENTER-t a visszalépéshez...[/]");
             Console.ReadLine();
         }
-
         static void InitAdatok()
         {
             jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17, 2, 5, 85, 0, 4, 12, 1));
             jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3, 8, 92, 15, 2, 3, 0));
             jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26, 20, 2, 4, 145, 42, 3, 5, 0));
         }
+        static void CsapatSzures()
+        {
+            szures.Clear();
+            string input = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]csapatra[/]: ");
+            foreach (var jatekos in jatekosok)
+            {
+                if (jatekos.Csapat == input)
+                {
+                    szures.Add(jatekos);
+                }
+            }
+            UI.ListaMegjelenitese(szures);
+        }
+
     }
+    
 }
