@@ -25,8 +25,7 @@ namespace Nyilvántartó
                 {
                     case "Fájl":
                         string fajlMuvelet = UI.FajlMenuValaszto();
-                        //FajlKezeles(fajlMuvelet);
-                        AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                        FajlKezeles(fajlMuvelet);
                         Visszaleptetes();
                         break;
                     case "Megtekintés":
@@ -289,7 +288,53 @@ namespace Nyilvántartó
             }
             UI.ListaMegjelenitese(szures);
         }
+        static void FajlKezeles(string muvelet)
+        {
+            switch (muvelet)
+            {
+                case "Új adatbázis":
+                    AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                    break;
+                case "Betöltés fájlból":
+                    AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                    break;
+                case "Mentés fájlba":
+                    MentésFájlba();
+                    break;
+                case "<- Vissza":
+                    break;
+            }
+        }
+        static void MentésFájlba()
+        {
+            try
+            {
+                string mentesIde = AnsiConsole.Ask<string>("Add meg a [bold yellow]mentés[/] kívánt helyét / nevét: ");
+                List<string> sorok = new List<string>();
+                string fejlec = "Nev;Eletkor;Csapat;Meccs;Gyozelem;Dontetlen;Vereseg;Gol;Bunteto;SargaLap;Kiallitas;PirosLap";
+                sorok.Add(fejlec);
+
+                foreach (var j in jatekosok)
+                {
+                    string sor = $"{j.Nev};{j.Eletkor};{j.Csapat};{j.Meccs};{j.Gyozelem};{j.Dontetlen};" +
+                                    $"{j.Vereseg};{j.Gol};{j.Bunteto};{j.SargaLap};{j.Kiallitas};{j.PirosLap}";
+
+                    sorok.Add(sor);
+                }
+
+                File.WriteAllLines($"{mentesIde}.csv", sorok, System.Text.Encoding.UTF8);
+
+                Console.WriteLine("\nAz adatok sikeresen elmentve a jatekosok.csv fájlba.");
+            }
+            catch (Exception hiba)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\nHiba történt a mentés során: " + hiba.Message);
+                Console.ResetColor();
+                Console.ReadKey(true);
+            }
+
+        }
 
     }
-    
 }
