@@ -306,10 +306,14 @@ namespace Nyilvántartó
             switch (muvelet)
             {
                 case "Új adatbázis":
-                    AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                    if (AnsiConsole.Confirm("[red]Biztosan törlöd a jelenlegi listát?[/]"))
+                    {
+                        jatekosok.Clear();
+                        UI.SikeresMuvelet("Adatbázis kiürítve.");
+                    }
                     break;
                 case "Betöltés fájlból":
-                    AnsiConsole.MarkupLine("[yellow]Ez a funkció fejlesztés alatt...[/]");
+                    BetöltésFájlból();
                     break;
                 case "Mentés fájlba":
                     MentésFájlba();
@@ -347,6 +351,66 @@ namespace Nyilvántartó
                 Console.ReadKey(true);
             }
 
+        }
+
+        static void BetöltésFájlból()
+        {
+            try
+            {
+                string fajlNev = AnsiConsole.Ask<string>("Add meg a betöltendő fájl nevét (kiterjesztés nélkül): ");
+                string teljesPath = $"{fajlNev}.csv";
+
+                if (!File.Exists(teljesPath))
+                {
+                    UI.HibaUzenet($"A fájl nem található: {teljesPath}");
+                    return;
+                }
+
+                string[] sorok = File.ReadAllLines(teljesPath, System.Text.Encoding.UTF8);
+
+                // Ha üres a fájl vagy csak fejléc van
+                if (sorok.Length <= 1)
+                {
+                    UI.HibaUzenet("A fájl nem tartalmaz adatokat!");
+                    return;
+                }
+
+                AnsiConsole.Status().Start("Adatok betöltése...", ctx =>
+                {
+                    // Töröljük a jelenlegi listát, ha friss betöltést akarunk (opcionális)
+                    // jatekosok.Clear(); 
+
+                    // Az első sort (fejlécet) kihagyjuk
+                    for (int i = 1; i < sorok.Length; i++)
+                    {
+                        string[] adatok = sorok[i].Split(';');
+                        if (adatok.Length == 12)
+                        {
+                            jatekosok.Add(new Jatekos(
+                                adatok[0],                          // Név
+                                int.Parse(adatok[1]),               // Kor
+                                adatok[2],                          // Csapat
+                                int.Parse(adatok[3]),               // Meccs
+                                int.Parse(adatok[4]),               // Győzelem
+                                int.Parse(adatok[5]),               // Döntetlen
+                                int.Parse(adatok[6]),               // Vereség
+                                int.Parse(adatok[7]),               // Gól
+                                int.Parse(adatok[8]),               // Büntető
+                                int.Parse(adatok[9]),               // Sárga
+                                int.Parse(adatok[10]),              // Kiállítás
+                                int.Parse(adatok[11])               // Piros
+                            ));
+                        }
+                    }
+                    System.Threading.Thread.Sleep(800);
+                });
+
+                UI.SikeresMuvelet("Az adatok betöltése sikeresen megtörtént!");
+            }
+            catch (Exception hiba)
+            {
+                UI.HibaUzenet($"Hiba történt a betöltés során: {hiba.Message}");
+            }
         }
 
     }
