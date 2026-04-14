@@ -288,6 +288,19 @@ namespace Nyilvántartó
             }
             UI.ListaMegjelenitese(szures);
         }
+        static void JatekosSzures()
+        {
+            szures.Clear();
+            string input = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]játékosra[/]: ");
+            foreach (var jatekos in jatekosok)
+            {
+                if (jatekos.Nev == input)
+                {
+                    szures.Add(jatekos);
+                }
+            }
+            UI.ListaMegjelenitese(szures);
+        }
         static void FajlKezeles(string muvelet)
         {
             switch (muvelet)
