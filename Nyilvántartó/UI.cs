@@ -126,6 +126,15 @@ namespace Nyilvántartó
             AnsiConsole.Write(panel);
             AnsiConsole.WriteLine();
         }
+        public static string SzuresValaszto()
+        {
+            AnsiConsole.Write(new Rule("[yellow]SZŰRÉS[/]").RuleStyle("grey").LeftJustified());
+            AnsiConsole.WriteLine();
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .HighlightStyle(new Style(foreground: Color.Black, background: Color.Yellow))
+                    .AddChoices(new[] { "Csapat szerint", "Játékos szerint", "Top gól lövők szerint", "<- Vissza" }));
+        }
         public static string FajlMenuValaszto()
         {
             Console.Clear();

@@ -31,12 +31,13 @@ namespace Nyilvántartó
                     case "Megtekintés":
                         Console.Clear();
                         UI.ListaMegjelenitese(jatekosok);
-                        UI.TopGollovokChart(jatekosok);
-                        CsapatSzures();
+                        string szuresMuvelet = UI.SzuresValaszto();
+                        SzuresKezeles(szuresMuvelet);
                         Visszaleptetes();
                         break;
                     case "Felvétel":
                         JatekosFelvetel();
+                        Visszaleptetes();
                         break;
                     case "Módosítás":
                         JatekosModositas();
@@ -44,6 +45,7 @@ namespace Nyilvántartó
                         break;
                     case "Törlés":
                         JatekosTorol();
+                        Visszaleptetes();
                         break;
                     case "Kilépés":
                         futAProgram = false;
@@ -274,6 +276,23 @@ namespace Nyilvántartó
             jatekosok.Add(new Jatekos("Bánhidi Bence", 29, "Pick Szeged", 24, 17, 2, 5, 85, 0, 4, 12, 1));
             jatekosok.Add(new Jatekos("Lékai Máté", 35, "Ferencváros", 26, 15, 3, 8, 92, 15, 2, 3, 0));
             jatekosok.Add(new Jatekos("Klujber Katrin", 24, "FTC-Rail Cargo", 26, 20, 2, 4, 145, 42, 3, 5, 0));
+        }
+        static void SzuresKezeles(string muvelet)
+        {
+            switch (muvelet)
+            {
+                case "Csapat szerint":
+                    CsapatSzures();
+                    break;
+                case "Játékos szerintl":
+                    JatekosSzures();
+                    break;
+                case "Top gól lövők szerint":
+                    UI.TopGollovokChart(jatekosok);
+                    break;
+                case "<- Vissza":
+                    break;
+            }
         }
         static void CsapatSzures()
         {
