@@ -16,6 +16,9 @@ namespace Nyilvántartó
             bool futAProgram = true;
             while (futAProgram)
             {
+                Console.Clear();
+                UI.ListaMegjelenitese(jatekosok);
+
                 string valasztas = UI.MenuValaszto();
 
                 switch (valasztas)
@@ -23,11 +26,9 @@ namespace Nyilvántartó
                     case "Fájl":
                         string fajlMuvelet = UI.FajlMenuValaszto();
                         FajlKezeles(fajlMuvelet);
-                        Visszaleptetes();
+                        //Visszaleptetes();
                         break;
-                    case "Megtekintés":
-                        Console.Clear();
-                        UI.ListaMegjelenitese(jatekosok);
+                    case "Szűrés":
                         string szuresMuvelet = UI.SzuresValaszto();
                         SzuresKezeles(szuresMuvelet);
                         break;
@@ -36,7 +37,6 @@ namespace Nyilvántartó
                         break;
                     case "Módosítás":
                         JatekosModositas();
-                        Visszaleptetes();
                         break;
                     case "Törlés":
                         JatekosTorol();

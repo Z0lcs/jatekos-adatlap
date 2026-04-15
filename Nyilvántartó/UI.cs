@@ -9,21 +9,13 @@ namespace Nyilvántartó
     {
         public static string MenuValaszto()
         {
-            Console.Clear();
-
-            var header = new FigletText("HANDBALL PRO")
-                .Color(Color.DeepSkyBlue1)
-                .Centered();
-            AnsiConsole.Write(header);
-
-            AnsiConsole.Write(new Rule("[yellow]FŐMENÜ[/]").RuleStyle("grey").LeftJustified());
-            AnsiConsole.WriteLine();
+            AnsiConsole.Write(new Rule("[yellow]KEZELŐPULT[/]").RuleStyle("grey").LeftJustified());
 
             return AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .PageSize(10)
                     .HighlightStyle(new Style(foreground: Color.Black, background: Color.DeepSkyBlue1))
-                    .AddChoices(new[] { "Fájl", "Megtekintés", "Felvétel", "Módosítás", "Törlés", "Kilépés" }));
+                    .AddChoices(new[] { "Szűrés", "Felvétel", "Módosítás", "Törlés", "Fájl", "Kilépés" }));
         }
         public static void ListaMegjelenitese(List<Jatekos> jatekosLista)
         {
