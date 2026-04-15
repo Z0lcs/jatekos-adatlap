@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Spectre.Console;
+﻿using Spectre.Console;
 
 namespace Nyilvántartó
 {
@@ -281,7 +278,7 @@ namespace Nyilvántartó
                 case "Csapat szerint":
                     CsapatSzures();
                     break;
-                case "Játékos szerintl":
+                case "Játékos szerint":
                     JatekosSzures();
                     break;
                 case "Top gól lövők szerint":
@@ -307,10 +304,10 @@ namespace Nyilvántartó
         static void JatekosSzures()
         {
             szures.Clear();
-            string input = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]játékosra[/]: ");
+            string bekér = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]játékosra[/]: ");
             foreach (var jatekos in jatekosok)
             {
-                if (jatekos.Nev == input)
+                if (jatekos.Nev == bekér)
                 {
                     szures.Add(jatekos);
                 }
@@ -368,7 +365,6 @@ namespace Nyilvántartó
             }
 
         }
-
         static void BetöltésFájlból()
         {
             try
