@@ -277,12 +277,15 @@ namespace Nyilvántartó
             {
                 case "Csapat szerint":
                     CsapatSzures();
+                    Visszaleptetes();
                     break;
                 case "Játékos szerint":
                     JatekosSzures();
+                    Visszaleptetes();
                     break;
                 case "Top gól lövők szerint":
                     UI.TopGollovokChart(jatekosok);
+                    Visszaleptetes();
                     break;
                 case "<- Vissza":
                     break;
@@ -292,27 +295,54 @@ namespace Nyilvántartó
         {
             szures.Clear();
             string input = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]csapatra[/]: ");
+
             foreach (var jatekos in jatekosok)
             {
-                if (jatekos.Csapat == input)
+                if (jatekos.Csapat.Equals(input, StringComparison.OrdinalIgnoreCase))
                 {
                     szures.Add(jatekos);
                 }
             }
-            UI.ListaMegjelenitese(szures);
+
+            Console.Clear();
+            AnsiConsole.Write(new Rule($"[yellow]Szűrési feltétel: Csapat = {input}[/]").LeftJustified());
+            AnsiConsole.WriteLine();
+
+            if (szures.Count > 0)
+            {
+                UI.ListaMegjelenitese(szures);
+            }
+            else
+            {
+                UI.HibaUzenet("Nincs a keresési feltételnek megfelelő játékos.");
+            }
         }
+
         static void JatekosSzures()
         {
             szures.Clear();
-            string bekér = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]játékosra[/]: ");
+            string bekér = AnsiConsole.Ask<string>("Szűrés a kívánt [bold yellow]játékos nevére[/]: ");
+
             foreach (var jatekos in jatekosok)
             {
-                if (jatekos.Nev == bekér)
+                if (jatekos.Nev.Contains(bekér, StringComparison.OrdinalIgnoreCase))
                 {
                     szures.Add(jatekos);
                 }
             }
-            UI.ListaMegjelenitese(szures);
+
+            Console.Clear();
+            AnsiConsole.Write(new Rule($"[yellow]Szűrési feltétel: Név tartalmazza: '{bekér}'[/]").LeftJustified());
+            AnsiConsole.WriteLine();
+
+            if (szures.Count > 0)
+            {
+                UI.ListaMegjelenitese(szures);
+            }
+            else
+            {
+                UI.HibaUzenet("Nem található ilyen nevű játékos.");
+            }
         }
         static void FajlKezeles(string muvelet)
         {
@@ -339,7 +369,7 @@ namespace Nyilvántartó
         {
             try
             {
-                string mentesIde = AnsiConsole.Ask<string>("Add meg a [bold yellow]mentés[/] nevét (kiterjesztés nélkül): ");
+                string mentesIde = AnsiConsole.Ask<string>("Add meg a [bold yellow]mentés nevét[/] (kiterjesztés nélkül): ");
                 List<string> sorok = new List<string>();
                 string fejlec = "Nev;Eletkor;Csapat;Meccs;Gyozelem;Dontetlen;Vereseg;Gol;Bunteto;SargaLap;Kiallitas;PirosLap";
                 sorok.Add(fejlec);
@@ -369,7 +399,7 @@ namespace Nyilvántartó
         {
             try
             {
-                string fajlNev = AnsiConsole.Ask<string>("Add meg a betöltendő fájl nevét (kiterjesztés nélkül): ");
+                string fajlNev = AnsiConsole.Ask<string>("Add meg a betöltendő [bold yellow]fájl nevét[/] (kiterjesztés nélkül): ");
                 string teljesPath = $"{fajlNev}.csv";
 
                 if (!File.Exists(teljesPath))
@@ -380,7 +410,6 @@ namespace Nyilvántartó
 
                 string[] sorok = File.ReadAllLines(teljesPath, System.Text.Encoding.UTF8);
 
-                // Ha üres a fájl vagy csak fejléc van
                 if (sorok.Length <= 1)
                 {
                     UI.HibaUzenet("A fájl nem tartalmaz adatokat!");
@@ -389,10 +418,8 @@ namespace Nyilvántartó
 
                 AnsiConsole.Status().Start("Adatok betöltése...", ctx =>
                 {
-                    // Töröljük a jelenlegi listát, ha friss betöltést akarunk (opcionális)
-                    // jatekosok.Clear(); 
+                    jatekosok.Clear(); 
 
-                    // Az első sort (fejlécet) kihagyjuk
                     for (int i = 1; i < sorok.Length; i++)
                     {
                         string[] adatok = sorok[i].Split(';');

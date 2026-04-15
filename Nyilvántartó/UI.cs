@@ -143,7 +143,7 @@ namespace Nyilvántartó
             return AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .HighlightStyle(new Style(foreground: Color.Black, background: Color.Yellow))
-                    .AddChoices(new[] { "Új adatbázis (Törlés)", "Betöltés fájlból", "Mentés fájlba", "<- Vissza" }));
+                    .AddChoices(new[] { "Új adatbázis", "Betöltés fájlból", "Mentés fájlba", "<- Vissza" }));
         }
     }
 }
