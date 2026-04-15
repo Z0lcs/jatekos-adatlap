@@ -342,7 +342,7 @@ namespace Nyilvántartó
         {
             try
             {
-                string mentesIde = AnsiConsole.Ask<string>("Add meg a [bold yellow]mentés[/] kívánt helyét / nevét: ");
+                string mentesIde = AnsiConsole.Ask<string>("Add meg a [bold yellow]mentés[/] nevét (kiterjesztés nélkül): ");
                 List<string> sorok = new List<string>();
                 string fejlec = "Nev;Eletkor;Csapat;Meccs;Gyozelem;Dontetlen;Vereseg;Gol;Bunteto;SargaLap;Kiallitas;PirosLap";
                 sorok.Add(fejlec);
@@ -357,7 +357,7 @@ namespace Nyilvántartó
 
                 File.WriteAllLines($"{mentesIde}.csv", sorok, System.Text.Encoding.UTF8);
 
-                Console.WriteLine("\nAz adatok sikeresen elmentve a jatekosok.csv fájlba.");
+                Console.WriteLine($"\nAz adatok sikeresen elmentve a {mentesIde}.csv fájlba.");
             }
             catch (Exception hiba)
             {
