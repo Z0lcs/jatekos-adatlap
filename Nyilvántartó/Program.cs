@@ -33,11 +33,9 @@ namespace Nyilvántartó
                         UI.ListaMegjelenitese(jatekosok);
                         string szuresMuvelet = UI.SzuresValaszto();
                         SzuresKezeles(szuresMuvelet);
-                        Visszaleptetes();
                         break;
                     case "Felvétel":
                         JatekosFelvetel();
-                        Visszaleptetes();
                         break;
                     case "Módosítás":
                         JatekosModositas();
@@ -45,7 +43,6 @@ namespace Nyilvántartó
                         break;
                     case "Törlés":
                         JatekosTorol();
-                        Visszaleptetes();
                         break;
                     case "Kilépés":
                         futAProgram = false;
