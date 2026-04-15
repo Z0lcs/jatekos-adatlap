@@ -377,10 +377,7 @@ namespace Nyilvántartó
             {
                 UI.HibaUzenet("Nincs a keresési feltételnek megfelelő játékos.");
             }
-            Visszaleptetes();
-
         }
-
         static void JatekosSzures()
         {
             szures.Clear();
@@ -406,7 +403,6 @@ namespace Nyilvántartó
             {
                 UI.HibaUzenet("Nem található ilyen nevű játékos.");
             }
-            Visszaleptetes();
         }
         static void FajlKezeles(string muvelet)
         {
