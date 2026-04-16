@@ -26,7 +26,7 @@ namespace Nyilvántartó
                     case "Fájl":
                         string fajlMuvelet = UI.FajlMenuValaszto();
                         FajlKezeles(fajlMuvelet);
-                        //Visszaleptetes();
+                        Visszaleptetes();
                         break;
                     case "Szűrés":
                         string szuresMuvelet = UI.SzuresValaszto();
@@ -375,7 +375,7 @@ namespace Nyilvántartó
             }
             else
             {
-                UI.HibaUzenet("Nincs a keresési feltételnek megfelelő játékos.");
+                UI.HibaUzenet("Nincs a keresési feltételnek megfelelő csapat.");
             }
         }
         static void JatekosSzures()

@@ -120,7 +120,7 @@ namespace Nyilvántartó
         }
         public static string SzuresValaszto()
         {
-            AnsiConsole.Write(new Rule("[yellow]SZŰRÉS[/]").RuleStyle("grey").LeftJustified());
+            //AnsiConsole.Write(new Rule("[yellow]SZŰRÉS[/]").RuleStyle("grey").LeftJustified());
             AnsiConsole.WriteLine();
             return AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
